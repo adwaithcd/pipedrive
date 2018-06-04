@@ -1,0 +1,55 @@
+<div class="layout-container">
+  <section class="mb4" layout="column" layout-align="start center">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+     <img class="app-logo" src="https://d33wubrfki0l68.cloudfront.net/1024e472aff98590e047001cbfa4d0cc05c5aba1/afc59/assets/img/vo-logo.svg" />
+    <md-button target="_blank" ng-if="$ctrl.userAccounts" ng-href="create-new-integration/" class="md-accent md-raised" layout="row">
+      <md-icon>add</md-icon> Add Account</md-button>
+  </section>
+
+  <section layout="column" layout-align="start center">
+    <md-list class="mw7 w-100" ng-if="$ctrl.userAccounts">
+      <md-list-item ng-repeat="account in $ctrl.userAccounts track by $index">
+        <md-card class="w-100 has-hidden-action-buttons">
+          <md-content class="pa3" layout="row" layout-align="space-between center" ng-if="account.app_authenticated">
+            <a class="mb0" ui-sref="accountSettings({ accountId: account.id })">
+              <h3 class="f3 mb2">{{ ::account.handle }}</h3>
+              <div><b>YellowAnt Invoke Name:</b> {{ ::account.user_invoke_name }}</div>
+                <!--<div>Run <i>{{ ::account.user_invoke_name }} api_key api 'your_api_key'</i> initially in slack to activate your functions.
+             </div>-->
+                <div ng-if="!account.is_valid" class="mw7 w-100">
+                  <div md-colors="::{ color: 'accent'}"><b>INTEGRATE</b> this account with Pipedrive </div>
+                </div>
+                <div>Click to update your API token</div>
+            </a>
+            <a ng-if="account.app_authenticated" md-button class="md-primary md-raised hidden-action-buttons" ui-sref="accountSettings({ accountId: account.id })">View</a>
+            <!--<a ng-if="account.app_authenticated" md-button class="md-primary md-raised hidden-action-buttons" ng-click="$ctrl.onDeleteAccount(account)" >Delete</a>-->
+          </md-content>
+          <md-content class="pa3" layout="row" layout-align="space-between center" ng-if="!account.app_authenticated">
+            <div class="mb0">
+              <h3 class="f3 mb2" md-colors="::{ color: 'accent'}">Pipedrive Account Not Integrated</h3>
+              <div><b>YellowAnt Invoke Name:</b> {{ ::account.user_invoke_name }}</div>
+            </div>
+            <a md-button class="md-accent md-raised hidden-action-buttons" target="_blank" ng-href="create-new-integration/">Integrate</a>
+          </md-content>
+        </md-card>
+      </md-list-item>
+    </md-list>
+    <div ng-if="!$ctrl.userAccounts" class="mw7 w-100">
+      <div class="mb3"><i>
+       Pipedrive is a sales CRM and Pipeline Management software .
+      </i></div>
+      <div layout="row" layout-align="center" class="mb4">
+        <img class="app-logo" src="https://d33wubrfki0l68.cloudfront.net/1024e472aff98590e047001cbfa4d0cc05c5aba1/afc59/assets/img/vo-logo.svg" />
+      </div>
+      <div>
+        The Pipedrive integration for YellowAnt allows you to manage your account in the following ways:
+        <ul>
+          <li>Get incident details</li>
+          <li>Create incidents and components</li>
+          <li>Resolve issues faster</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+</div>
