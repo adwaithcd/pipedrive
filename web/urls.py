@@ -10,8 +10,8 @@ from .views import index
 
 urlpatterns = [
     path("user/", userdetails, name="home"),
-    # path("user/<int:id>/", user_detail_update_delete_view, name="home"),
-    # path("accounts/<int:id>/", user_detail_update_delete_view, name="home"),
+    path("user/<int:id>/", user_detail_update_delete_view, name="home"),
+    path("accounts/<int:id>/", user_detail_update_delete_view, name="home"),
     path("apiKey/", user_detail_update_delete_view, name="home"),
     # path("yellowantredirecturl/register/",UserLogin,name="home"),
     url(r'^(?P<path>.*)$', index, name="index"),

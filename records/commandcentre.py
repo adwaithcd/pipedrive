@@ -6,14 +6,10 @@
 """
 from __future__ import print_function
 import json
-from pprint import pprint
-import re
 import requests
 # from yellowant import YellowAnt
 from yellowant.messageformat import MessageClass, MessageAttachmentsClass, AttachmentFieldsClass
 from django.conf import settings
-import victorops_client
-from victorops_client.rest import ApiException
 from .models import PipedriveUserToken, YellowUserToken
 
 
@@ -46,7 +42,14 @@ class CommandCentre(object):
             'add_user': self.add_user,
             'add_deal': self.add_deal,
             'get_currencies': self.get_currencies,
-        }
+            'list_all_deals': self.list_all_deals,
+            'activity_type': self.activity_type,
+            'add_activity': self.add_activity,
+            'list_pipelines': self.list_pipelines,
+            'add_pipeline': self.add_pipeline,
+            'probability_list': self.probability_list,
+            'list_activities': self.list_activities
+         }
 
         self.user_integration = YellowUserToken.objects.get(yellowant_integration_id=self.yellowant_integration_id)
         self.pipedrive_object = PipedriveUserToken.objects.get(user_integration=self.user_integration)
@@ -190,7 +193,7 @@ class CommandCentre(object):
             return message.to_json()
         else:
             response_json = response.json()
-            print(response_json)
+            # print(response_json)
             userinfo = response_json['data']
             print(userinfo)
             message.message_text = "User Added!"
@@ -226,8 +229,17 @@ class CommandCentre(object):
             field6.value = 'True' if userinfo['is_admin'] else 'False'
             attachment.attach_field(field6)
 
-            message.attach(attachment)
+            phone = "-" if userinfo['phone'] is None else userinfo['phone']
 
+            message.data = {
+                "name": userinfo['name'],
+                "ID": userinfo['id'],
+                "Email": userinfo['email'],
+                "Phone": phone,
+                "Default currency": userinfo['default_currency']
+            }
+
+            message.attach(attachment)
             return message.to_json()
 
     def add_deal(self, args):
@@ -235,51 +247,363 @@ class CommandCentre(object):
         body = {
                 "title": args['title'],
                 "value": args['value'],
-                "currency": "INR",
+                "currency": args['currency'],
                 "person_id": args['Contact-person-name'],
                 "org_id": args['Organization-Name'],
                 "status": "",
-                "probability": args['Probability']
+                # "probability": args['Probability']
             }
         response = requests.post(url, headers=self.headers, data=json.dumps(body))
         # print(response)
-        response_json = response.json()
-        userinfo = response_json['data']
-
         message = MessageClass()
-        message.message_text = "Deal created"
 
-        attachment = MessageAttachmentsClass()
+        if response.status_code == 400:
+            attachment = MessageAttachmentsClass()
+            attachment.text = "No stages found in the default pipeline. Cannot add a deal."
+            message.attach(attachment)
+            return message.to_json()
+        else:
+            response_json = response.json()
+            dealinfo = response_json['data']
+            message.message_text = "Deal created"
 
-        field1 = AttachmentFieldsClass()
-        field1.title = "Title"
-        field1.value = userinfo['title']
-        attachment.attach_field(field1)
+            attachment = MessageAttachmentsClass()
 
-        field2 = AttachmentFieldsClass()
-        field2.title = "Value"
-        field2.value = str(userinfo['currency']) + " " + str(userinfo['value'])
-        attachment.attach_field(field2)
+            field1 = AttachmentFieldsClass()
+            field1.title = "Title"
+            field1.value = dealinfo['title']
+            attachment.attach_field(field1)
 
-        field3 = AttachmentFieldsClass()
-        field3.title = "Name"
-        field3.value = userinfo['person_id']['name']
-        attachment.attach_field(field3)
+            field2 = AttachmentFieldsClass()
+            field2.title = "Value"
+            field2.value = str(dealinfo['currency']) + " " + str(dealinfo['value'])
+            attachment.attach_field(field2)
 
-        field4 = AttachmentFieldsClass()
-        field4.title = "Company"
-        field4.value = userinfo['org_id']['name']
-        attachment.attach_field(field4)
+            field3 = AttachmentFieldsClass()
+            field3.title = "Name"
+            field3.value = dealinfo['person_id']['name']
+            attachment.attach_field(field3)
 
-        field5 = AttachmentFieldsClass()
-        field5.title = "Handled by"
-        field5.value = userinfo['user_id']['name']
-        attachment.attach_field(field5)
+            field4 = AttachmentFieldsClass()
+            field4.title = "Company"
+            field4.value = dealinfo['org_id']['name']
+            attachment.attach_field(field4)
 
-        message.attach(attachment)
-        return message.to_json()
+            field5 = AttachmentFieldsClass()
+            field5.title = "Handled by"
+            field5.value = dealinfo['user_id']['name']
+            attachment.attach_field(field5)
+
+            message.data = {
+                "Title": dealinfo['title'],
+                "Value": dealinfo['value'],
+                "Currency": dealinfo['currency'],
+                "Name": dealinfo['person_id']['name'],
+                "Company": dealinfo['org_id']['name'],
+                "Handled by": dealinfo['user_id']['name']
+            }
+
+            message.attach(attachment)
+            return message.to_json()
 
     def get_currencies(self, args):
-        pass
+        # message = MessageClass()
+        # message.message_text = "Currency List:"
+        # message.data = {
+        #     "data": [{
+        #         "code": "fdfd",
+        #         "name": "skdfhjkld"
+        #     }]
+        # }
+        # return message.to_json()
+        url = settings.PIPEDRIVE_GET_CURRENCY + self.pipedrive_api_token
+        response = requests.get(url, headers=self.headers)
+        response_json = response.json()
+        # print(response_json)
+        message = MessageClass()
+        message.message_text = "Currency list:"
+        data = response_json['data']
+        name_list = {'data': []}
+        for i in data:
+            name_list['data'].append({"code": str(i['code']), "name": str(i['name'])})
+        message.data = name_list
+        print(message.data)
+        return message.to_json()
 
+    def list_all_deals(self, args):
+        url = settings.PIPEDRIVE_GET_ALL_DEAL + self.pipedrive_api_token
+        response = requests.get(url, headers=self.headers)
+        response_json = response.json()
+        # print(response_json)
+        deal_info = response_json['data']
 
+        message = MessageClass()
+        message.message_text = "Deals"
+
+        for i in range(len(deal_info)):
+            attachment = MessageAttachmentsClass()
+            attachment.text = "Deal" + " " + str(i+1)
+
+            field1 = AttachmentFieldsClass()
+            field1.title = "Title"
+            field1.value = deal_info[i]['title']
+            attachment.attach_field(field1)
+
+            field2 = AttachmentFieldsClass()
+            field2.title = "Value"
+            field2.value = str(deal_info[i]['currency']) + " " + str(deal_info[i]['value'])
+            attachment.attach_field(field2)
+
+            field3 = AttachmentFieldsClass()
+            field3.title = "Name"
+            field3.value = deal_info[i]['person_id']['name']
+            attachment.attach_field(field3)
+
+            field4 = AttachmentFieldsClass()
+            field4.title = "Company"
+            field4.value = deal_info[i]['org_id']['name']
+            attachment.attach_field(field4)
+
+            field5 = AttachmentFieldsClass()
+            field5.title = "Handled by"
+            field5.value = deal_info[i]['user_id']['name']
+            attachment.attach_field(field5)
+
+            field6 = AttachmentFieldsClass()
+            field6.title = "Status"
+            field6.value = deal_info[i]['status']
+            attachment.attach_field(field6)
+
+            message.attach(attachment)
+        return message.to_json()
+
+    def activity_type(self, args):
+        message = MessageClass()
+        data = {'list': []}
+        data['list'].append({"activity": "Call"})
+        data['list'].append({"activity": "Meeting"})
+        data['list'].append({"activity": "Task"})
+        data['list'].append({"activity": "Deadline"})
+        data['list'].append({"activity": "Email"})
+        data['list'].append({"activity": "Lunch"})
+        print(data)
+        message.data = data
+        return message.to_json()
+
+    def add_activity(self, args):
+        url = settings.PIPEDRIVE_ADD_ACTIVITY + self.pipedrive_api_token
+        body = {
+                "subject": args['Subject'],
+                "done": "0",
+                "type": args['Type'],
+                "due_date": args['Due-Date'],
+                "deal_id": args['Deal'],
+                "person_id": args['Contact-Person']
+                }
+        response = requests.post(url, headers=self.headers, data=json.dumps(body))
+        # print(response)
+        # print(response_json)
+        message = MessageClass()
+        if response.status_code == 400:
+            attachment = MessageAttachmentsClass()
+            attachment.text = "Unrecognized date value for due date."
+            message.attach(attachment)
+            return message.to_json()
+        else:
+            response_json = response.json()
+            activity_info = response_json['data']
+            message.message_text = "Activity added"
+
+            attachment = MessageAttachmentsClass()
+
+            field1 = AttachmentFieldsClass()
+            field1.title = "Activity Subject"
+            field1.value = activity_info['subject']
+            attachment.attach_field(field1)
+
+            field2 = AttachmentFieldsClass()
+            field2.title = "Activity Type"
+            field2.value = activity_info['type']
+            attachment.attach_field(field2)
+
+            field3 = AttachmentFieldsClass()
+            field3.title = "Due Date"
+            field3.value = activity_info['due_date']
+            attachment.attach_field(field3)
+
+            field4 = AttachmentFieldsClass()
+            field4.title = "Contact Person"
+            field4.value = activity_info['person_name']
+            attachment.attach_field(field4)
+
+            field5 = AttachmentFieldsClass()
+            field5.title = "Company"
+            field5.value = activity_info['org_name']
+            attachment.attach_field(field5)
+
+            field6 = AttachmentFieldsClass()
+            field6.title = "Handled by"
+            field6.value = activity_info['owner_name']
+            attachment.attach_field(field6)
+
+            message.data = {
+                "Activity Subject": activity_info['subject'],
+                "Activity Type": activity_info['type'],
+                "Due Date": activity_info['due_date'],
+                "Contact Person": activity_info['person_name'],
+                "Company": activity_info['org_name'],
+                "Handled by": activity_info['owner_name']
+            }
+
+            message.attach(attachment)
+            return message.to_json()
+
+    def list_pipelines(self, args):
+        url = settings.PIPEDRIVE_GET_ADD_PIPELINE + self.pipedrive_api_token
+        response = requests.get(url, headers=self.headers)
+        response_json = response.json()
+        # print(response_json)
+        pipeline_info = response_json['data']
+        # print(deal_info)
+        message = MessageClass()
+        message.message_text = "Pipelines"
+        for i in range(len(pipeline_info)):
+            attachment = MessageAttachmentsClass()
+            attachment.text = "Pipeline" + " " + str(i+1)
+
+            field1 = AttachmentFieldsClass()
+            field1.title = "Name"
+            field1.value = pipeline_info[i]['name']
+            attachment.attach_field(field1)
+
+            field2 = AttachmentFieldsClass()
+            field2.title = "Url title"
+            field2.value = pipeline_info[i]['url_title']
+            attachment.attach_field(field2)
+
+            field3 = AttachmentFieldsClass()
+            field3.title = "Add Time"
+            field3.value = pipeline_info[i]['add_time']
+            attachment.attach_field(field3)
+
+            field4 = AttachmentFieldsClass()
+            field4.title = "Order"
+            field4.value = pipeline_info[i]['order_nr']
+            attachment.attach_field(field4)
+
+            message.attach(attachment)
+        return message.to_json()
+
+    def probability_list(self,args):
+        message = MessageClass()
+        data = {'list': []}
+        data['list'].append({"probability": 0})
+        data['list'].append({"probability": 1})
+        print(data)
+        message.data = data
+        return message.to_json()
+
+    def add_pipeline(self, args):
+        url = settings.PIPEDRIVE_GET_ADD_PIPELINE + self.pipedrive_api_token
+        body = {
+                "name": args['Name'],
+                "deal_probability": args['Deal-Probability'],
+                "active": "1"
+                }
+        response = requests.post(url, headers=self.headers, data=json.dumps(body))
+        print(response.text)
+        message = MessageClass()
+
+        if response.status_code == 400:
+            attachment = MessageAttachmentsClass()
+            attachment.text = "Cannot add the pipeline."
+            message.attach(attachment)
+            return message.to_json()
+        else:
+            response_json = response.json()
+            pipeline_info = response_json['data']
+            message.message_text = "Pipeline created"
+
+            attachment = MessageAttachmentsClass()
+
+            field1 = AttachmentFieldsClass()
+            field1.title = "Name"
+            field1.value = pipeline_info['name']
+            attachment.attach_field(field1)
+
+            field2 = AttachmentFieldsClass()
+            field2.title = "Url title"
+            field2.value = pipeline_info['url_title']
+            attachment.attach_field(field2)
+
+            field3 = AttachmentFieldsClass()
+            field3.title = "Add Time"
+            field3.value = pipeline_info['add_time']
+            attachment.attach_field(field3)
+
+            field4 = AttachmentFieldsClass()
+            field4.title = "Order"
+            field4.value = pipeline_info['order_nr']
+            attachment.attach_field(field4)
+
+            field5 = AttachmentFieldsClass()
+            field5.title = "Deal Probability"
+            field5.value = pipeline_info['deal_probability']
+            attachment.attach_field(field5)
+
+            message.data = {
+                "Name": pipeline_info['name'],
+                "Url title": pipeline_info['url_title'],
+                "Add Time": pipeline_info['add_time'],
+                "Order": pipeline_info['order_nr']
+            }
+
+            message.attach(attachment)
+            return message.to_json()
+
+    def list_activities(self, args):
+        url = settings.PIPEDRIVE_GET_ALL_ACTIVITY + self.pipedrive_api_token
+        response = requests.get(url, headers=self.headers)
+        response_json = response.json()
+        # print(response_json)
+        activity_info = response_json['data']
+
+        message = MessageClass()
+        message.message_text = "Activities"
+
+        for i in range(len(activity_info)):
+            attachment = MessageAttachmentsClass()
+            attachment.text = "Activity" + " " + str(i + 1)
+
+            field1 = AttachmentFieldsClass()
+            field1.title = "Activity Subject"
+            field1.value = activity_info[i]['subject']
+            attachment.attach_field(field1)
+
+            field2 = AttachmentFieldsClass()
+            field2.title = "Activity Type"
+            field2.value = activity_info[i]['type']
+            attachment.attach_field(field2)
+
+            field3 = AttachmentFieldsClass()
+            field3.title = "Due Date"
+            field3.value = activity_info[i]['due_date']
+            attachment.attach_field(field3)
+
+            field4 = AttachmentFieldsClass()
+            field4.title = "Contact Person"
+            field4.value = "-" if activity_info[i]['person_name'] is None else activity_info[i]['person_name']
+            attachment.attach_field(field4)
+
+            field5 = AttachmentFieldsClass()
+            field5.title = "Company"
+            field5.value = "-" if activity_info[i]['org_name'] is None else activity_info[i]['org_name']
+            attachment.attach_field(field5)
+
+            field6 = AttachmentFieldsClass()
+            field6.title = "Handled by"
+            field6.value = activity_info[i]['owner_name']
+            attachment.attach_field(field6)
+
+            message.attach(attachment)
+        return message.to_json()

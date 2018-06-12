@@ -3,10 +3,14 @@ Functions corresponding to URL patterns of web app
 
 """
 import json
+from uuid import uuid4
+
 import requests
 from django.http import HttpResponse
 from django.shortcuts import render
 from yellowant import YellowAnt
+
+from django.conf import settings
 from records.models import YellowUserToken, PipedriveUserToken
 
 
@@ -77,20 +81,22 @@ def user_detail_update_delete_view(request, id=None):
             "is_valid": pdut.apikey_login_update_flag
         }))
 
-    # elif request.method == "DELETE":
-    #     # deletes the integration
-    #     access_token_dict = YellowUserToken.objects.get(id=id)
-    #     access_token = access_token_dict.yellowant_token
-    #     print(access_token)
-    #     user_integration_id = access_token_dict.yellowant_integration_id
-    #     print(user_integration_id)
-    #     url = "https://api.yellowant.com/api/user/integration/%s"%(user_integration_id)
-    #     yellowant_user = YellowAnt(access_token=access_token)
-    #     print(yellowant_user)
-    #     yellowant_user.delete_user_integration(id=user_integration_id)
-    #     response_json = YellowUserToken.objects.get(yellowant_token=access_token).delete()
-    #     print(response_json)
-    #     return HttpResponse("successResponse", status=204)
+    elif request.method == "DELETE":
+        # deletes the integration
+        print("in delete")
+        access_token_dict = YellowUserToken.objects.get(id=id)
+        print(access_token_dict)
+        access_token = access_token_dict.yellowant_token
+        print(access_token)
+        user_integration_id = access_token_dict.yellowant_integration_id
+        print(user_integration_id)
+        url = "https://api.yellowant.com/api/user/integration/%s"%(user_integration_id)
+        yellowant_user = YellowAnt(access_token=access_token)
+        print(yellowant_user)
+        yellowant_user.delete_user_integration(id=user_integration_id)
+        response_json = YellowUserToken.objects.get(yellowant_token=access_token).delete()
+        print(response_json)
+        return HttpResponse("successResponse", status=204)
     elif request.method == "PUT":
         # adds a new integration
         data = json.loads(request.body.decode("utf-8"))
@@ -103,12 +109,31 @@ def user_detail_update_delete_view(request, id=None):
 
         url = 'https://api.pipedrive.com/v1/users?api_token=' + api_token
         response = requests.get(url, headers=headers)
-        # response_json = response.json()
-        # data = response_json['users'][0]
-        # response.status_code = 401
-        # for i in range(len(data)):
-        #     if data[i]['username'] == user_id:
-        #         response.status_code = 200
+
+        print(response.text)
+
+        access_token_dict = YellowUserToken.objects.get(id=user_integration)
+        print(access_token_dict)
+        # access_token = access_token_dict.yellowant_token
+        test = access_token_dict.webhook_id
+        print(test)
+        # print(access_token)
+        user_integration_id = access_token_dict.yellowant_integration_id
+        # weut = YellowUserToken.objects.get(yellowant_integration_id=user_integration_id)
+        # hash_str = weut.webhook_id
+        hash_str = test
+        print(hash_str)
+        webhook_url = settings.BASE_URL + "/webhook/" + hash_str + "/"
+        webhook_post_url = settings.PIPEDRIVE_WEBHOOK_URL + api_token
+        print(webhook_url)
+        headers = {
+            'Content-Type': 'application/json',
+            }
+        body = {
+                "subscription_url": webhook_url,
+                "event_action": "added",
+                "event_object": "*"
+                }
 
         if response.status_code == 200:
             print("Valid")
@@ -118,6 +143,9 @@ def user_detail_update_delete_view(request, id=None):
             api_new.save()
             # print(api_new.victorops_api_id)
             # print(api_new.victorops_api_key)
+            web_response = requests.post(webhook_post_url, headers=headers, data=json.dumps(body))
+            print(web_response)
+            print(web_response.text)
             return HttpResponse("Submitted", status=200)
         else:
             print("Invalid")

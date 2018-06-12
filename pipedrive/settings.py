@@ -27,7 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-BASE_URL = 'http://b2b594e8.ngrok.io'
+BASE_URL = 'http://f81e12a1.ngrok.io'
 
 YELLOWANT_OAUTH_URL = "https://www.yellowant.com/api/oauth2/authorize/"
 YELLOWANT_CLIENT_ID = "FxoBnWPiiKEO1EDO5BUTtWUJy8x1UvJyu3IS8WL7"
@@ -38,7 +38,13 @@ YELLOWANT_REDIRECT_URL = BASE_URL + "/redirecturl/"
 PIPEDRIVE_LIST_ADD_USERS_URL = "https://api.pipedrive.com/v1/users?api_token="
 PIPEDRIVE_SEARCH_USERS_URL = "https://api.pipedrive.com/v1/users/find?term=%s&api_token="
 PIPEDRIVE_ADD_DEAL = "https://api.pipedrive.com/v1/deals?api_token="
-# PIPERIVE_ADD_USER = "https://api.pipedrive.com/v1/users?api_token="
+PIPEDRIVE_GET_CURRENCY = "https://api.pipedrive.com/v1/currencies?api_token="
+PIPEDRIVE_GET_ALL_DEAL = "https://api.pipedrive.com/v1/deals?status=all_not_deleted&start=0&api_token="
+PIPEDRIVE_ADD_ACTIVITY = "https://api.pipedrive.com/v1/activities?api_token="
+PIPEDRIVE_GET_ADD_PIPELINE = "https://api.pipedrive.com/v1/pipelines?api_token="
+PIPEDRIVE_GET_ALL_ACTIVITY = "https://api.pipedrive.com/v1/activities?start=0&api_token="
+PIPEDRIVE_WEBHOOK_URL = "https://api.pipedrive.com/v1/webhooks?api_token="
+
 # Application definition
 
 INSTALLED_APPS = [

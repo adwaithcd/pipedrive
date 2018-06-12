@@ -16,7 +16,8 @@ Including another URLconf
 from django.conf.urls import url
 from django.contrib import admin
 from django.urls import include, path
-from records.views import redirectToYellowAntAuthenticationPage, yellowantRedirecturl, yellowantapi
+from records.views import redirectToYellowAntAuthenticationPage,\
+    yellowantRedirecturl, yellowantapi, webhook
 from web import urls as web_urls
 
 urlpatterns = [
@@ -26,5 +27,6 @@ urlpatterns = [
     path("redirecturl/", yellowantRedirecturl, name="yellowant-auth-redirect"),
     path("yellowantauthurl/", redirectToYellowAntAuthenticationPage, name="yellowant-auth-url"),
     path("yellowant-api/", yellowantapi, name="yellowant-api"),
+    url('webhook/(?P<hash_str>[^/]+)/$', webhook, name='webhook'),
     path('', include(web_urls)),
 ]
