@@ -1,6 +1,6 @@
 # Sourced from https://github.com/github/gitignore/blob/master/Python.gitignore
 
-web/static/node_modules/*
+lib/web/static/node_modules/*
 */node_modules/*
 .idea/*
 migrations/*
