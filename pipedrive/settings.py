@@ -27,13 +27,15 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-BASE_URL = 'http://f81e12a1.ngrok.io'
+BASE_HREF = "/"
+BASE_URL = 'http://ba4bb30c.ngrok.io'
 
 YELLOWANT_OAUTH_URL = "https://www.yellowant.com/api/oauth2/authorize/"
 YELLOWANT_CLIENT_ID = "FxoBnWPiiKEO1EDO5BUTtWUJy8x1UvJyu3IS8WL7"
 YELLOWANT_CLIENT_SECRET = "3tJIcz9jW2UKzDh9wCXrXLgwe5By6CQ4hUAhOTXLdPdfAsI0uPS58HG5y8NjfxyjuzG2iKOYTyz2AHY7m8Zl28rEDJtpU4med8huok4UjVEaNxd7QHz85e125SGYcLvg"
 YELLOWANT_VERIFICATION_TOKEN = "X4CjBJsNAD0d2GPhczRFUsmL3EuPYIhEjGKS2W0bcYRQSSwNTPFiJFfWqVmD1a0eeTpC5LNNTIvVZyQE4ROc7G7flqBc4sh3Bi6FbHu3dmckSb4Phfoporlxe62GFaCV"
 YELLOWANT_REDIRECT_URL = BASE_URL + "/redirecturl/"
+YA_APP_ID = 1854
 
 PIPEDRIVE_LIST_ADD_USERS_URL = "https://api.pipedrive.com/v1/users?api_token="
 PIPEDRIVE_SEARCH_USERS_URL = "https://api.pipedrive.com/v1/users/find?term=%s&api_token="
@@ -54,8 +56,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'records',
-    'web',
+    'lib.records',
+    'lib.web',
 ]
 
 MIDDLEWARE = [

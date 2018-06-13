@@ -16,9 +16,9 @@ Including another URLconf
 from django.conf.urls import url
 from django.contrib import admin
 from django.urls import include, path
-from records.views import redirectToYellowAntAuthenticationPage,\
+from lib.records.views import redirectToYellowAntAuthenticationPage,\
     yellowantRedirecturl, yellowantapi, webhook
-from web import urls as web_urls
+from lib.web import urls as web_urls
 
 urlpatterns = [
     path('admin/', admin.site.urls),
