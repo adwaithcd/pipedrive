@@ -11,11 +11,6 @@ from yellowant import YellowAnt
 from ..records.models import YellowUserToken, PipedriveUserToken
 
 
-def user_login(request):
-    """Sample Login Page"""
-    return render(request, "login.html")
-
-
 def index(request, path):
     """
         Loads the homepage of the app.
@@ -24,6 +19,8 @@ def index(request, path):
     # print('test')
 
     context = {
+        "base_href": settings.BASE_HREF,
+        "application_id": settings.YA_APP_ID,
         "user_integrations": []
     }
     # Check if user is authenticated otherwise redirect user to login page
@@ -32,10 +29,6 @@ def index(request, path):
         # print(user_integrations)
         # for user_integration in user_integrations:
         #     context["user_integrations"].append(user_integration)
-        context = {"base_href": settings.BASE_HREF,
-                   "application_id": settings.YA_APP_ID,
-                   }
-
     return render(request, "home.html", context)
 
 
