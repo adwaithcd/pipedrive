@@ -75,12 +75,12 @@ def user_detail_update_delete_view(request, id=None):
 
     elif request.method == "DELETE":
         # deletes the integration
-        print("In delete_integration")
-        print(id)
-        print("user is ", request.user.id)
+        # print("In delete_integration")
+        # print(id)
+        # print("user is ", request.user.id)
         access_token_dict = YellowUserToken.objects.get(id=id)
         user_id = access_token_dict.user
-        print("id is ", user_id)
+        # print("id is ", user_id)
         if user_id == request.user.id:
             access_token = access_token_dict.yellowant_token
             user_integration_id = access_token_dict.yellowant_integration_id
