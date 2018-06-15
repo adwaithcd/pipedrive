@@ -1,0 +1,374 @@
+api_url: http://05f0338d.ngrok.io/yellowant-api/
+creator_email: adwaithgowda@gmail.com
+documentation_url: https://www.yellowant.com/docs
+functions:
+  activity_type:
+    function_type: 1
+    input_args: {}
+    invoke_name: activity_type
+    is_active: 0
+    max_retries: 0
+    name: Activity type
+    output_keys:
+      _keys:
+        list: '[list]:    List of List'
+      list:
+        activity: '__unicode:    List  activity names'
+    privacy_mode: 0
+    rate_limited: 0
+    short_description: Type of the activity.
+    user_rate_limit: 0.0
+  add_activity:
+    function_type: 1
+    input_args:
+      Contact-Person:
+        arg_type: 14
+        description: The person this activity will be associated with
+        example: John Doe
+        name: Contact-Person
+        required: 1
+      Deal:
+        arg_type: 14
+        description: The deal name with which this activity will be associated with.
+        example: Test Deal
+        name: Deal
+        required: 1
+      Due-Date:
+        arg_type: 8
+        description: 'Due date of the activity. Format: YYYY-MM-DD'
+        example: '2018-08-16'
+        name: Due-Date
+        required: 1
+      Subject:
+        arg_type: 14
+        description: Subject of the activity
+        example: This is a test subject
+        name: Subject
+        required: 1
+      Type:
+        arg_type: 14
+        description: Type of the activity
+        example: Call
+        name: Type
+        required: 1
+    invoke_name: add_activity
+    is_active: 1
+    max_retries: 0
+    name: Add Activity
+    output_keys:
+      _keys:
+        Activity Subject: '__unicode:  Activity  subject'
+        Activity Type: '__unicode:  Activity  type'
+        Company: '__unicode:  Company'
+        Contact Person: '__unicode:  Contact  person'
+        Due Date: '__unicode:  Due  date'
+        Handled by: '__unicode:  Handled by'
+    privacy_mode: 0
+    rate_limited: 0
+    short_description: Adds a new activity.
+    user_rate_limit: 0.0
+  add_deal:
+    function_type: 1
+    input_args:
+      Contact-person-name:
+        arg_type: 14
+        description: The person this deal will be associated with
+        example: John Doe
+        name: Contact-person-name
+        required: 1
+      Organization-Name:
+        arg_type: 14
+        description: The organization this deal will be associated with
+        example: YellowAnt
+        name: Organization-Name
+        required: 1
+      currency:
+        arg_type: 14
+        description: Currency of the deal.Accepts a 3-character currency code
+        example: INR
+        name: currency
+        required: 0
+      title:
+        arg_type: 14
+        description: Deal title
+        example: Deal title
+        name: title
+        required: 1
+      value:
+        arg_type: 14
+        description: Value of the deal.If omitted, value will be set to 0.
+        example: '50000'
+        name: value
+        required: 1
+    invoke_name: add_deal
+    is_active: 1
+    max_retries: 0
+    name: Add Deal
+    output_keys:
+      _keys:
+        Company: '__unicode:  Company'
+        Currency: '__unicode:  Currency'
+        Handled by: '__unicode:  Handled by'
+        Name: '__unicode:  Name'
+        Title: '__unicode:  Title'
+        Value: '__unicode:  Value'
+    privacy_mode: 0
+    rate_limited: 0
+    short_description: Adds a new deal.
+    user_rate_limit: 0.0
+  add_pipeline:
+    function_type: 1
+    input_args:
+      Deal-Probability:
+        arg_type: 1
+        description: 'Whether deal probability is disabled or enabled for this pipeline.
+
+          0 - Disabled'
+        example: '1'
+        name: Deal-Probability
+        required: 1
+      Name:
+        arg_type: 14
+        description: Name of the pipeline
+        example: Test Pipeline
+        name: Name
+        required: 1
+    invoke_name: add_pipeline
+    is_active: 1
+    max_retries: 0
+    name: Add Pipeline
+    output_keys:
+      _keys:
+        Add Time: '__unicode:  Add  time'
+        Name: '__unicode:  Name'
+        Order: '__unicode:  Order'
+        Url title: '__unicode:  Url title'
+    privacy_mode: 0
+    rate_limited: 0
+    short_description: Adds a new pipeline
+    user_rate_limit: 0.0
+  add_user:
+    function_type: 1
+    input_args:
+      Email:
+        arg_type: 14
+        description: Email of the user
+        example: test@example.com
+        name: Email
+        required: 1
+      Name:
+        arg_type: 14
+        description: Name of the user
+        example: John Doe
+        name: Name
+        required: 1
+    invoke_name: add_user
+    is_active: 1
+    max_retries: 0
+    name: Add User
+    output_keys:
+      _keys:
+        Default currency: '__unicode:   Default currency'
+        Email: '__unicode:   Email'
+        ID: '__unicode:   Id'
+        Phone: '__unicode:   Phone'
+        name: '__unicode:   Name'
+    privacy_mode: 0
+    rate_limited: 0
+    short_description: Adds a new user to the company.
+    user_rate_limit: 0.0
+  get_currencies:
+    function_type: 1
+    input_args: {}
+    invoke_name: get_currencies
+    is_active: 0
+    max_retries: 0
+    name: Get currencies
+    output_keys:
+      _keys:
+        data: '[data]:  List of Data'
+      data:
+        code: '__unicode:  Data code'
+        name: '__unicode:  Data name'
+    privacy_mode: 0
+    rate_limited: 0
+    short_description: Gets the details of various  currencies
+    user_rate_limit: 0.0
+  list_activities:
+    function_type: 1
+    input_args: {}
+    invoke_name: list_activities
+    is_active: 1
+    max_retries: 0
+    name: List Activities
+    output_keys: {}
+    privacy_mode: 0
+    rate_limited: 0
+    short_description: List all the activities associated with the user
+    user_rate_limit: 0.0
+  list_all_deals:
+    function_type: 1
+    input_args: {}
+    invoke_name: list_all_deals
+    is_active: 1
+    max_retries: 0
+    name: List all deals
+    output_keys: {}
+    privacy_mode: 0
+    rate_limited: 0
+    short_description: Returns all the deals
+    user_rate_limit: 0.0
+  list_pipelines:
+    function_type: 1
+    input_args: {}
+    invoke_name: list_pipelines
+    is_active: 1
+    max_retries: 0
+    name: List Pipelines
+    output_keys: {}
+    privacy_mode: 0
+    rate_limited: 0
+    short_description: Get details about all the pipelines associated with the user
+    user_rate_limit: 0.0
+  list_users:
+    function_type: 1
+    input_args: {}
+    invoke_name: list_users
+    is_active: 1
+    max_retries: 0
+    name: List Users
+    output_keys: {}
+    privacy_mode: 0
+    rate_limited: 0
+    short_description: Returns data about all users within the company
+    user_rate_limit: 0.0
+  new_activity:
+    function_type: 2
+    input_args: {}
+    invoke_name: new_activity
+    is_active: 1
+    max_retries: 0
+    name: New Activity notification
+    output_keys:
+      _keys:
+        Activity Type: '__unicode:    Activity  type'
+        Company: '__unicode:    Company'
+        Contact Person: '__unicode:    Contact  person'
+        Deal Title: '__unicode:    Deal Title'
+        Deal_email: '__unicode:   Deal_email'
+        Due Date: '__unicode:    Due  date'
+        Handled by: '__unicode:    Handled by'
+    privacy_mode: 0
+    rate_limited: 0
+    short_description: New Activity notification
+    user_rate_limit: 0.0
+  new_deal:
+    function_type: 2
+    input_args: {}
+    invoke_name: new_deal
+    is_active: 1
+    max_retries: 0
+    name: New Deal notification
+    output_keys:
+      _keys:
+        Company: '__unicode:    Company'
+        Currency: '__unicode:    Currency'
+        Deal_email: '__unicode:  Deal_email'
+        Handled by: '__unicode:    Handled by'
+        Name: '__unicode:    Name'
+        Title: '__unicode:    Title'
+        Value: '__unicode:    Value'
+    privacy_mode: 0
+    rate_limited: 0
+    short_description: New Deal notification
+    user_rate_limit: 0.0
+  new_pipeline:
+    function_type: 2
+    input_args: {}
+    invoke_name: new_pipeline
+    is_active: 1
+    max_retries: 0
+    name: New Pipeline notification
+    output_keys:
+      _keys:
+        Add Time: '__unicode:  Add  time'
+        Name: '__unicode:  Name'
+        Order: '__unicode:  Order'
+        Url title: '__unicode:  Url title'
+    privacy_mode: 0
+    rate_limited: 0
+    short_description: New Pipeline notification
+    user_rate_limit: 0.0
+  new_user:
+    function_type: 2
+    input_args: {}
+    invoke_name: new_user
+    is_active: 1
+    max_retries: 0
+    name: New user notification
+    output_keys:
+      _keys:
+        Default currency: '__unicode:  Default currency'
+        Email: '__unicode:  Email'
+        ID: '__unicode:  Id'
+        Phone: '__unicode:  Phone'
+        name: '__unicode:  Name'
+    privacy_mode: 0
+    rate_limited: 0
+    short_description: New User notification
+    user_rate_limit: 0.0
+  probability_list:
+    function_type: 1
+    input_args: {}
+    invoke_name: probability_list
+    is_active: 0
+    max_retries: 0
+    name: Probability Options
+    output_keys:
+      _keys:
+        list: '[list]:     List of List'
+      list:
+        probability: '__unicode:     List  '
+    privacy_mode: 0
+    rate_limited: 0
+    short_description: 'Gives a list of two value.
+
+      0 - Probability is disabled
+
+      1 - Probability is enabled'
+    user_rate_limit: 0.0
+  search_users:
+    function_type: 1
+    input_args:
+      Search-Term:
+        arg_type: 14
+        description: Search term to look for. The search term must to be at least
+          2 characters long.
+        example: John
+        name: Search-Term
+        required: 1
+    invoke_name: search_users
+    is_active: 1
+    max_retries: 0
+    name: Search Users
+    output_keys: {}
+    privacy_mode: 0
+    rate_limited: 0
+    short_description: Finds users by their name.
+    user_rate_limit: 0.0
+icon_url: https://www.pipedriveassets.com/images/logo/inverted-logo.svg
+install_page_url: https://www.yellowant.com/install
+invoke_name: pipedrive
+is_active: 1
+is_production_or_sandbox: 1
+long_description: Pipedrive is a sales management tool designed to help small sales
+  teams manage intricate or lengthy sales processes.
+name: Pipedrive
+privacy_policy_url: https://www.yellowant.com/privacy
+rate_limit: 0.0
+rate_limited: 0
+redirect_uris: http://05f0338d.ngrok.io/redirecturl/
+short_description: Pipedrive is a sales CRM and Pipeline Management software .
+user_rate_limit: 0.0
+visibility_scope: 0
+website: https://www.yellowant.com/install

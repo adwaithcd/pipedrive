@@ -11,6 +11,10 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
 import os
+import json
+
+data = open('yellowant_app_credentials.json').read()
+data_json = json.loads(data)
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -25,17 +29,28 @@ SECRET_KEY = '3u1%8yghh3x6!(v_xu7t29!8#0)_tjtd(=!g-t2ba&p-yatpm='
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+app_name = os.environ.get("HEROKU_APP_NAME")
+BASE_URL = "https://{}.herokuapp.com".format(app_name)
+ALLOWED_HOSTS = ['*', '{}.herokuapp.com'.format(app_name)]
 
 BASE_HREF = "/"
-BASE_URL = 'http://05f0338d.ngrok.io'
+SITE_PROTOCOL = "http://"
+
+DEV_ENV = os.environ.get('ENV', 'DEV')
+if DEV_ENV == "DEV":
+    BASE_URL = "https://dd272eb3.ngrok.io"
+    SITE_DOMAIN_URL = "ngrok.io"
+elif DEV_ENV == "HEROKU":
+    BASE_URL = "https://{}.herokuapp.com/".format(app_name)
+    app_name = os.environ.get("HEROKU_APP_NAME")
+    SITE_DOMAIN_URL = "herokuapp.com"
 
 YELLOWANT_OAUTH_URL = "https://www.yellowant.com/api/oauth2/authorize/"
-YELLOWANT_CLIENT_ID = "FxoBnWPiiKEO1EDO5BUTtWUJy8x1UvJyu3IS8WL7"
-YELLOWANT_CLIENT_SECRET = "3tJIcz9jW2UKzDh9wCXrXLgwe5By6CQ4hUAhOTXLdPdfAsI0uPS58HG5y8NjfxyjuzG2iKOYTyz2AHY7m8Zl28rEDJtpU4med8huok4UjVEaNxd7QHz85e125SGYcLvg"
-YELLOWANT_VERIFICATION_TOKEN = "X4CjBJsNAD0d2GPhczRFUsmL3EuPYIhEjGKS2W0bcYRQSSwNTPFiJFfWqVmD1a0eeTpC5LNNTIvVZyQE4ROc7G7flqBc4sh3Bi6FbHu3dmckSb4Phfoporlxe62GFaCV"
-YELLOWANT_REDIRECT_URL = BASE_URL + "/redirecturl/"
-YA_APP_ID = 1854
+YELLOWANT_APP_ID = str(data_json['application_id'])
+YELLOWANT_CLIENT_ID = str(data_json['client_id'])
+YELLOWANT_CLIENT_SECRET = str(data_json['client_secret'])
+YELLOWANT_VERIFICATION_TOKEN = str(data_json['verification_token'])
+YELLOWANT_REDIRECT_URL = BASE_URL + "redirecturl/"
 
 PIPEDRIVE_LIST_ADD_USERS_URL = "https://api.pipedrive.com/v1/users?api_token="
 PIPEDRIVE_SEARCH_USERS_URL = "https://api.pipedrive.com/v1/users/find?term=%s&api_token="
@@ -63,6 +78,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -105,6 +121,11 @@ DATABASES = {
         'PORT': '',
     }
 }
+if DEV_ENV == "HEROKU":
+    import dj_database_url
+    db_from_env = dj_database_url.config()
+    DATABASES['default'].update(db_from_env)
+    DATABASES['default']['CONN_MAX_AGE'] = 500
 
 
 # Password validation
@@ -144,3 +165,5 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
+

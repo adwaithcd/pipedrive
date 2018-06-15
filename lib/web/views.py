@@ -20,7 +20,7 @@ def index(request, path):
 
     context = {
         "base_href": settings.BASE_HREF,
-        "application_id": settings.YA_APP_ID,
+        "application_id": settings.YELLOWANT_APP_ID,
         "user_integrations": []
     }
     # Check if user is authenticated otherwise redirect user to login page
