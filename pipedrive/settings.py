@@ -28,7 +28,7 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 BASE_HREF = "/"
-BASE_URL = 'http://ba4bb30c.ngrok.io'
+BASE_URL = 'http://05f0338d.ngrok.io'
 
 YELLOWANT_OAUTH_URL = "https://www.yellowant.com/api/oauth2/authorize/"
 YELLOWANT_CLIENT_ID = "FxoBnWPiiKEO1EDO5BUTtWUJy8x1UvJyu3IS8WL7"
@@ -50,14 +50,15 @@ PIPEDRIVE_WEBHOOK_URL = "https://api.pipedrive.com/v1/webhooks?api_token="
 # Application definition
 
 INSTALLED_APPS = [
+    'lib.web',
+    'lib.records',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'lib.records',
-    'lib.web',
+
 ]
 
 MIDDLEWARE = [

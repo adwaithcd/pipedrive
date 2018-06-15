@@ -390,7 +390,6 @@ def yellowantapi(request):
 
         # Verifying whether the request is actually from YA using verification token
         if verification_token == settings.YELLOWANT_VERIFICATION_TOKEN:
-
             # Processing command in some class Command and sending a Message Object
             # Add_user and create_incident have flags to identify the status of the operation
             # and send webhook only if the operation is successful
