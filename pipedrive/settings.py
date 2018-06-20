@@ -38,7 +38,7 @@ SITE_PROTOCOL = "http://"
 
 DEV_ENV = os.environ.get('ENV', 'DEV')
 if DEV_ENV == "DEV":
-    BASE_URL = "https://dd272eb3.ngrok.io"
+    BASE_URL = "https://7e29f61c.ngrok.io"
     SITE_DOMAIN_URL = "ngrok.io"
 elif DEV_ENV == "HEROKU":
     BASE_URL = "https://{}.herokuapp.com/".format(app_name)

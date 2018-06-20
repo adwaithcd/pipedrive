@@ -23,7 +23,7 @@ from lib.web import urls as web_urls
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("create-new-integration/", redirectToYellowAntAuthenticationPage,
-         name="victorops-auth-redirect"),
+         name="pipedrive-auth-redirect"),
     path("redirecturl/", yellowantRedirecturl, name="yellowant-auth-redirect"),
     path("yellowantauthurl/", redirectToYellowAntAuthenticationPage, name="yellowant-auth-url"),
     path("yellowant-api/", yellowantapi, name="yellowant-api"),
