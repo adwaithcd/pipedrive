@@ -38,7 +38,7 @@ SITE_PROTOCOL = "http://"
 
 DEV_ENV = os.environ.get('ENV', 'DEV')
 if DEV_ENV == "DEV":
-    BASE_URL = "https://7e29f61c.ngrok.io"
+    BASE_URL = "https://7e39f61c.ngrok.io"
     SITE_DOMAIN_URL = "ngrok.io"
 elif DEV_ENV == "HEROKU":
     BASE_URL = "https://{}.herokuapp.com/".format(app_name)
@@ -52,6 +52,7 @@ YELLOWANT_CLIENT_SECRET = str(data_json['client_secret'])
 YELLOWANT_VERIFICATION_TOKEN = str(data_json['verification_token'])
 YELLOWANT_REDIRECT_URL = BASE_URL + "redirecturl/"
 
+# Pipedrive API endpoint urls
 PIPEDRIVE_LIST_ADD_USERS_URL = "https://api.pipedrive.com/v1/users?api_token="
 PIPEDRIVE_SEARCH_USERS_URL = "https://api.pipedrive.com/v1/users/find?term=%s&api_token="
 PIPEDRIVE_ADD_DEAL = "https://api.pipedrive.com/v1/deals?api_token="
