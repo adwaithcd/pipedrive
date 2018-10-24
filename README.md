@@ -18,4 +18,4 @@ Username: admin
 
 Password: pass
   
-### We request the user to change the ID AND PASSWORD
+### We request the user to change the ID AND PASSWORD AT THE EARLIEST
